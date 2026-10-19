@@ -1,38 +1,30 @@
-# FSR 3.1 Native AA
+# FSR 4.1.1 Native AA
 
-FSR 3.1 anti-aliasing at native resolution for Castlevania: Belmont’s Curse, with sharpening and an anti-ghosting option. Requires DX11. No frame generation.
+Experimental FSR 4.1.1 Native AA for Castlevania: Belmont’s Curse, using a DX11–DX12 bridge. Replaces this mod’s FSR 3.1 backend.
+
+Requires a Radeon RX 7000 or RX 9000 desktop GPU and a working DX12 runtime. The game stays on DX11. Linux requires current Proton and Mesa with FSR 4 support.
 
 ## Install
 
-Download a ZIP from [Releases](https://github.com/ollieatkinson/castlevania-belmonts-curse-fsr/releases/latest):
+Close the game and extract the whole plugin ZIP into the game folder. BepInEx 6.0.788 (Windows x64 / Unity IL2CPP) is required. The standalone ZIP includes it.
 
-- **Plugin:** for an existing BepInEx 6.0.788 Windows x64 / Unity IL2CPP installation.
-- **Standalone:** includes BepInEx. On Windows, you can also extract it anywhere and run `Install.cmd`.
+Select **Settings → Video → Anti-aliasing → FSR 4.1.1 Native AA**. Adjust sharpening below it. Select an original AA option to turn FSR off. Changes save automatically.
 
-Close the game and extract the whole ZIP into the game folder, beside `Castlevania Belmont's Curse.exe`.
+FSR renders at 100% resolution. This version has no frame generation or separate anti-ghosting mask. The SDK provides the temporal reconstruction.
 
-On Linux/Proton, set the Steam launch option:
-
-```sh
-WINEDLLOVERRIDES="winhttp=n,b" %command%
-```
-
-## Use
-
-Open **Settings → Video → Anti-aliasing** and select **FSR 3.1 Native AA**. Adjust **FSR 3.1 sharpening** and **FSR 3.1 anti-ghosting** below it. Changes save automatically. Select an original AA option to turn FSR off.
-
-FSR runs at 100% render scale. Sharpening defaults to 20%; anti-ghosting defaults to On. Some trails can remain around moving hair and transparent effects.
-
-To uninstall, close the game and delete `BepInEx/plugins/BelmontsCurseGraphics.dll`. Settings are stored in `BepInEx/config/ollieatkinson.belmontscursegraphics.cfg`.
+The managed plugin stays at `BepInEx/plugins/BelmontsCurseGraphics.dll`. Native files live in `BepInEx/FSR4/`. To uninstall, remove the plugin and that native folder after closing the game.
 
 ## Build
 
 ```sh
+bash scripts/build-native.sh
 dotnet build -c Release -p:GamePath="/path/to/game"
-dotnet run --project tests/Fsr31.Tests.csproj -c Release
+dotnet run --project tests/Fsr4.Tests.csproj -c Release
 GamePath="/path/to/game" bash scripts/package.sh
 ```
 
-Packages are written to `dist/`. See [development](docs/development.md), [testing](docs/validation.md) and [shader provenance](vendor/fsr3/PROVENANCE.md).
+The native build uses Zig. The script downloads and verifies AMD’s SDK runtime. Packages are written to `dist/`.
 
-MIT. Bundled dependencies retain their own licences. Unofficial community mod.
+See [development](docs/development.md), [testing](docs/validation.md) and [AMD SDK provenance](vendor/fsr4/PROVENANCE.md).
+
+Project code is MIT. AMD’s runtime and other bundled dependencies retain their own licences. Unofficial community mod.

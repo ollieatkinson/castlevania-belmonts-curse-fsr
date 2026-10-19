@@ -20,7 +20,14 @@ with zipfile.ZipFile(args.archive) as package:
             raise SystemExit(f'Invalid archive path: {name}')
         if 'bepinex/bepinex/' in name.casefold():
             raise SystemExit(f'Nested BepInEx folder: {name}')
-    required = {f'BepInEx/plugins/{args.plugin}', 'README.md', 'LICENSE', 'INSTALL.txt'}
+    required = {f'BepInEx/plugins/{args.plugin}', 'README.md', 'LICENSE', 'INSTALL.txt',
+                'BepInEx/FSR4/BelmontFsr4Bridge.dll', 'BepInEx/FSR4/amd_fidelityfx_upscaler_dx12.dll',
+                'BelmontsCurseGraphics/licenses/FSR4/LICENSE.md'}
+    for name in ['BepInEx/FSR4/BelmontFsr4Bridge.dll', 'BepInEx/FSR4/amd_fidelityfx_upscaler_dx12.dll']:
+        image = package.read(name)
+        pe = int.from_bytes(image[60:64], 'little')
+        if image[:2] != b'MZ' or image[pe:pe+6] != b'PE\0\0\x64\x86':
+            raise SystemExit(f'Expected Windows x64 native runtime: {name}')
     plugins = [name for name in names if PurePosixPath(name).name == args.plugin]
     if plugins != [f'BepInEx/plugins/{args.plugin}']:
         raise SystemExit(f'Plugin must appear exactly once under BepInEx/plugins: {plugins}')

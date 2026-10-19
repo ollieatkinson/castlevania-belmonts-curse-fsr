@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup>
   <ItemGroup>
-    <Compile Include="../src/Fsr31Options.cs" Link="Fsr31Options.cs" />
-    <Compile Include="../src/Fsr31Coordinates.cs" Link="Fsr31Coordinates.cs" />
+    <Compile Include="../src/Fsr4Options.cs" Link="Fsr4Options.cs" />
+    <Compile Include="../src/Fsr4Coordinates.cs" Link="Fsr4Coordinates.cs" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 namespace BelmontsCurseGraphics;
 
-internal static class Fsr31Coordinates
+internal static class Fsr4Coordinates
 {
     // URP applies its jitter matrix after converting to GPU projection space.
     // FSR expects offsets in input texture pixels, whose Y axis on DX11 is down.

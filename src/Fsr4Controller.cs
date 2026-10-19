@@ -7,18 +7,18 @@ using UnityEngine.Rendering.Universal;
 
 namespace BelmontsCurseGraphics;
 
-public sealed class Fsr31Controller : MonoBehaviour
+public sealed class Fsr4Controller : MonoBehaviour
 {
-    internal static Fsr31Controller? Instance;
-    internal Fsr31Options Current { get; private set; } = new();
-    internal bool Fsr31Active { get; private set; }
+    internal static Fsr4Controller? Instance;
+    internal Fsr4Options Current { get; private set; } = new();
+    internal bool Fsr4Active { get; private set; }
     internal string Status { get; private set; } = "Game AA";
     internal string? UnavailableReason { get; private set; }
     private Snapshot? snapshot;
     private bool failed;
     private float nextMenuRefresh;
 
-    public Fsr31Controller(IntPtr pointer) : base(pointer) { }
+    public Fsr4Controller(IntPtr pointer) : base(pointer) { }
     public void Awake()
     {
         Instance = this;
@@ -55,7 +55,7 @@ public sealed class Fsr31Controller : MonoBehaviour
             var failure = Requirements(camera, data!, pipeline!).Failure;
             if (failure != null)
             {
-                UnavailableReason = Fsr31Backend.Available ? failure : Fsr31Backend.UnavailableReason;
+                UnavailableReason = Fsr4Backend.Available ? failure : Fsr4Backend.UnavailableReason;
                 Deactivate("FSR unavailable; using game AA. " + UnavailableReason);
                 return;
             }
@@ -65,11 +65,11 @@ public sealed class Fsr31Controller : MonoBehaviour
                 snapshot = new Snapshot(camera, data!, pipeline!);
             }
             UnavailableReason = null;
-            Fsr31Backend.Tick(true);
+            Fsr4Backend.Tick(true);
             snapshot.Apply();
-            Fsr31Active = true;
-            Report(Fsr31Backend.Dispatching ? $"FSR 3.1 Native AA dispatching at {camera.pixelWidth}x{camera.pixelHeight}, 100%"
-                : "FSR 3.1 Native AA selected; awaiting first frame");
+            Fsr4Active = true;
+            Report(Fsr4Backend.Dispatching ? $"FSR 4.1.1 Native AA dispatching at {camera.pixelWidth}x{camera.pixelHeight}, 100%"
+                : "FSR 4.1.1 Native AA selected; awaiting first frame");
         }
         catch (Exception e)
         {
@@ -80,28 +80,28 @@ public sealed class Fsr31Controller : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
-    private static Fsr31Requirements Requirements(Camera camera, UniversalAdditionalCameraData data, UniversalRenderPipelineAsset pipeline)
+    private static Fsr4Requirements Requirements(Camera camera, UniversalAdditionalCameraData data, UniversalRenderPipelineAsset pipeline)
     {
         var index = data.m_RendererIndex < 0 ? pipeline.m_DefaultRendererIndex : data.m_RendererIndex;
         var renderers = pipeline.m_RendererDataList;
         var rendererData = index >= 0 && index < renderers.Length ? renderers[index]?.TryCast<UniversalRendererData>() : null;
         var shader = rendererData?.postProcessData?.shaders?.temporalAntialiasingPS;
         var renderer = data.scriptableRenderer?.TryCast<UniversalRenderer>();
-        return new(Fsr31Backend.Available, data.renderPostProcessing, shader && shader!.isSupported,
+        return new(Fsr4Backend.Available, data.renderPostProcessing, shader && shader!.isSupported,
             renderer != null && renderer.m_MotionVectorPass != null,
             data.renderType != CameraRenderType.Base || (data.cameraStack?.Count ?? 0) > 0,
             camera.allowDynamicResolution, camera.allowHDR && pipeline.supportsHDR);
     }
 
     [HideFromIl2Cpp]
-    internal void Apply(Fsr31Options options)
+    internal void Apply(Fsr4Options options)
     {
         options.Validate();
         Plugin.Settings.Save(options);
         if (options != Current)
-            Plugin.Logger.LogInfo($"FSR settings: enabled={options.Enabled}, sharpening={options.Sharpness:F2}, anti-ghosting={options.ReactiveMask}");
-        if (options.Enabled && !Current.Enabled) Fsr31Backend.Retry();
-        if (options.ReactiveMask != Current.ReactiveMask && snapshot?.Data is { } data && data) data.resetHistory = true;
+            Plugin.Logger.LogInfo($"FSR settings: enabled={options.Enabled}, sharpening={options.Sharpness:F2}");
+        if (options.Enabled && !Current.Enabled) Fsr4Backend.Retry();
+
         Current = options; failed = false; UnavailableReason = null;
         if (!options.Enabled) Deactivate("Game AA");
     }
@@ -116,9 +116,9 @@ public sealed class Fsr31Controller : MonoBehaviour
     [HideFromIl2Cpp]
     private void Deactivate(string status)
     {
-        Fsr31Active = false;
+        Fsr4Active = false;
         Restore();
-        Fsr31Backend.Tick(false);
+        Fsr4Backend.Tick(false);
         Report(status);
     }
 
@@ -139,9 +139,9 @@ public sealed class Fsr31Controller : MonoBehaviour
     [HideFromIl2Cpp]
     internal void Shutdown()
     {
-        Fsr31Active = false;
+        Fsr4Active = false;
         try { Restore(); }
-        finally { NativeVideoMenu.Shutdown(); Fsr31Backend.Shutdown(); }
+        finally { NativeVideoMenu.Shutdown(); Fsr4Backend.Shutdown(); }
     }
 
     public void OnDestroy() { Shutdown(); if (Instance == this) Instance = null; }

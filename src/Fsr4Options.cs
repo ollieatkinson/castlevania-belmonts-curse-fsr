@@ -1,6 +1,6 @@
 namespace BelmontsCurseGraphics;
 
-internal sealed record Fsr31Options(bool Enabled = false, float Sharpness = .2f, bool ReactiveMask = true)
+internal sealed record Fsr4Options(bool Enabled = false, float Sharpness = .2f)
 {
     internal void Validate()
     {
@@ -9,7 +9,7 @@ internal sealed record Fsr31Options(bool Enabled = false, float Sharpness = .2f,
     }
 }
 
-internal static class Fsr31MenuModel
+internal static class Fsr4MenuModel
 {
     internal static bool IsFsrChoice(int index, int nativeCount) => nativeCount > 0 && index == nativeCount;
     internal static bool IsNativeChoice(int index, int nativeCount) => index >= 0 && index < nativeCount;
@@ -18,14 +18,14 @@ internal static class Fsr31MenuModel
     internal static int SharpnessIndex(float value) => Math.Clamp((int)MathF.Round(value * 10), 0, 10);
 }
 
-internal sealed record Fsr31Requirements(bool Backend, bool PostProcessing, bool TemporalShader, bool MotionVectors,
+internal sealed record Fsr4Requirements(bool Backend, bool PostProcessing, bool TemporalShader, bool MotionVectors,
     bool Stacked, bool DynamicResolution, bool Hdr)
 {
-    internal string? Failure => !Backend ? "FSR shader package or resolve hook is unavailable."
+    internal string? Failure => !Backend ? "FSR 4 SDK, DX12 bridge or resolve hook is unavailable."
         : !PostProcessing ? "Post-processing is disabled."
         : !TemporalShader ? "The renderer's temporal shader is unavailable."
         : !MotionVectors ? "The renderer cannot produce motion vectors."
         : Stacked ? "Camera stacking is unsupported."
         : DynamicResolution ? "Dynamic resolution is unsupported."
-        : Hdr ? "FSR 3.1 supports LDR rendering only." : null;
+        : Hdr ? "FSR 4.1.1 supports LDR rendering only." : null;
 }

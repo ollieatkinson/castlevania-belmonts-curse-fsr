@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace BelmontsCurseGraphics;
 
-[BepInPlugin(Id, "FSR 3.1 Native AA", BuildInfo.Version)]
+[BepInPlugin(Id, "FSR 4.1.1 Native AA", BuildInfo.Version)]
 public sealed class Plugin : BasePlugin
 {
     // Preserve the development plugin identity and installation path for upgrades.
@@ -21,16 +21,16 @@ public sealed class Plugin : BasePlugin
         Compatibility.Method(typeof(CameraVideoSettings), nameof(CameraVideoSettings.OnAntiAliasingChanged), typeof(void), typeof(Setting<int>));
         Compatibility.Field(typeof(CameraVideoSettings), "_cameraData", typeof(UniversalAdditionalCameraData));
         Compatibility.Field(typeof(UniversalRenderer), "m_DepthTexture", typeof(UnityEngine.Rendering.RTHandle));
-        AddComponent<Fsr31Controller>();
+        AddComponent<Fsr4Controller>();
         harmony = new Harmony(Id); harmony.PatchAll(typeof(Plugin).Assembly);
-        Fsr31Backend.Load();
-        Log.LogInfo($"FSR 3.1 Native AA {BuildInfo.Version} loaded. Select Settings > Video > Anti-aliasing > FSR 3.1 Native AA.");
+        Fsr4Backend.Load();
+        Log.LogInfo($"FSR 4.1.1 Native AA {BuildInfo.Version} loaded. Select Settings > Video > Anti-aliasing > FSR 4.1.1 Native AA.");
         Log.LogInfo($"Graphics device: {UnityEngine.SystemInfo.graphicsDeviceName}; API={UnityEngine.SystemInfo.graphicsDeviceType}");
     }
 
     public override bool Unload()
     {
-        Fsr31Controller.Instance?.Shutdown();
+        Fsr4Controller.Instance?.Shutdown();
         harmony?.UnpatchSelf();
         return true;
     }
@@ -40,5 +40,5 @@ public sealed class Plugin : BasePlugin
 [HarmonyWrapSafe]
 internal static class GameAaChanged
 {
-    private static void Postfix(CameraVideoSettings __instance) => Fsr31Controller.Instance?.RecordGameAa(__instance._cameraData);
+    private static void Postfix(CameraVideoSettings __instance) => Fsr4Controller.Instance?.RecordGameAa(__instance._cameraData);
 }

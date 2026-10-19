@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>BelmontsCurseGraphics</AssemblyName>
-    <Version>0.3.0</Version>
+    <Version>0.4.0-preview.1</Version>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,9 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
-    <Compile Include="vendor/fsr3/Runtime/*.cs" />
-    <EmbeddedResource Include="assets/belmont_fsr31_nativeaa" LogicalName="BelmontsCurseGraphics.Fsr31Shaders" />
-    <EmbeddedResource Include="assets/belmont_fsr31_reactivity" LogicalName="BelmontsCurseGraphics.Fsr31Reactivity" />
+    <EmbeddedResource Include="assets/belmont_fsr4_bridge_pack" LogicalName="BelmontsCurseGraphics.Fsr4Pack" />
     <Reference Include="$(GamePath)/BepInEx/core/BepInEx.Core.dll" Private="false" />
     <Reference Include="$(GamePath)/BepInEx/core/BepInEx.Unity.IL2CPP.dll" Private="false" />
     <Reference Include="$(GamePath)/BepInEx/core/0Harmony.dll" Private="false" />

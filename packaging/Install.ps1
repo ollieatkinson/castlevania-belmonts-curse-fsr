@@ -19,7 +19,8 @@ try {
     # plugins and generated interop assemblies are never copied or removed.
     $required = @('winhttp.dll', 'doorstop_config.ini',
         'BepInEx/core/BepInEx.Core.dll', 'BepInEx/core/BepInEx.Unity.IL2CPP.dll',
-        'dotnet/coreclr.dll', "BepInEx/plugins/$PluginDll")
+        'dotnet/coreclr.dll', "BepInEx/plugins/$PluginDll",
+        'BepInEx/FSR4/BelmontFsr4Bridge.dll', 'BepInEx/FSR4/amd_fidelityfx_upscaler_dx12.dll')
     foreach ($relative in $required) {
         if (!(Test-Path -LiteralPath (Join-Path $source $relative) -PathType Leaf)) {
             throw "Missing $relative. Extract the WHOLE standalone ZIP before running Install.cmd."
@@ -60,7 +61,7 @@ try {
     }
     # Take a snapshot before copying: the source may be a subfolder of target.
     $files = @()
-    foreach ($folder in @('BepInEx/core', 'dotnet', 'BelmontsCurseGraphics/licenses')) {
+    foreach ($folder in @('BepInEx/core', 'BepInEx/FSR4', 'dotnet', 'BelmontsCurseGraphics/licenses')) {
         $path = Join-Path $source $folder
         if (Test-Path -LiteralPath $path -PathType Container) {
             $files += @(Get-ChildItem -LiteralPath $path -Recurse -File -Force)

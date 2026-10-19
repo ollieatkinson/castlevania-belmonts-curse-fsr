@@ -16,6 +16,8 @@ if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-
   exit 1
 fi
 
+bash scripts/build-native.sh
+
 "$dotnet_command" build BelmontsCurseGraphics.csproj -c Release \
   -p:GamePath="$GamePath" -p:Version="$version"
 
@@ -35,8 +37,10 @@ with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as package:
     package.write("docs/validation.md", "docs/validation.md")
     for document in ("README.md", "LICENSE"):
         package.write(document, document)
-    for document in ("LICENSE.txt", "LICENSE_AMD_FidelityFX.txt", "PROVENANCE.md"):
-        package.write("vendor/fsr3/" + document, "BelmontsCurseGraphics/licenses/FSR3/" + document)
+    for binary in ("BelmontFsr4Bridge.dll", "amd_fidelityfx_upscaler_dx12.dll"):
+        package.write(".build/fsr4/" + binary, "BepInEx/FSR4/" + binary)
+    for document in ("LICENSE.md", "PROVENANCE.md"):
+        package.write("vendor/fsr4/" + document, "BelmontsCurseGraphics/licenses/FSR4/" + document)
     package.write("docs/development.md", "docs/development.md")
 checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
 archive.with_suffix(".zip.sha256").write_text(f"{checksum}  {archive.name}\n")

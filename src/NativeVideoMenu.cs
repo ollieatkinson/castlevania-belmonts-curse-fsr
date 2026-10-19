@@ -27,7 +27,7 @@ internal static class NativeVideoMenu
         {
             selector = new Selector(binding);
             selectors.Add(binding.GetInstanceID(), selector);
-            Plugin.Logger.LogInfo("Added FSR 3.1 Native AA to the native Video AA selector.");
+            Plugin.Logger.LogInfo("Added FSR 4.1.1 Native AA to the native Video AA selector.");
         }
         selector.Refresh();
     }
@@ -40,14 +40,14 @@ internal static class NativeVideoMenu
     internal static bool ChangeAa(UIDropdownEnumSettingBinding binding, int index)
     {
         if (!IsAa(binding) || !selectors.TryGetValue(binding.GetInstanceID(), out var selector)) return true;
-        if (updating || Fsr31Controller.Instance is not { } owner) return false;
-        if (Fsr31MenuModel.IsFsrChoice(index, selector.NativeValues.Length))
+        if (updating || Fsr4Controller.Instance is not { } owner) return false;
+        if (Fsr4MenuModel.IsFsrChoice(index, selector.NativeValues.Length))
         {
             owner.Apply(owner.Current with { Enabled = true });
             selector.Refresh();
             return false;
         }
-        if (!Fsr31MenuModel.IsNativeChoice(index, selector.NativeValues.Length)) return false;
+        if (!Fsr4MenuModel.IsNativeChoice(index, selector.NativeValues.Length)) return false;
         // Restore first, then let the original binding update and save its native value.
         owner.Apply(owner.Current with { Enabled = false });
         return true;
@@ -60,7 +60,7 @@ internal static class NativeVideoMenu
         if (!source || !source!._listStepper || !source.nameLabel) return;
         PrepareAa(source);
         menus.Add(view.GetInstanceID(), new Menu(view, source));
-        Plugin.Logger.LogInfo("Added FSR 3.1 sharpening and anti-ghosting controls to the native Video menu.");
+        Plugin.Logger.LogInfo("Added FSR 4.1.1 sharpening control to the native Video menu.");
     }
 
     internal static void Tick()
@@ -113,8 +113,8 @@ internal static class NativeVideoMenu
 
         internal void Refresh()
         {
-            if (!Binding || Fsr31Controller.Instance is not { } owner) return;
-            var label = owner.Current.Enabled && (!Fsr31Backend.Available || owner.UnavailableReason != null) ? "FSR 3.1 (unavailable)" : "FSR 3.1 Native AA";
+            if (!Binding || Fsr4Controller.Instance is not { } owner) return;
+            var label = owner.Current.Enabled && (!Fsr4Backend.Available || owner.UnavailableReason != null) ? "FSR 4.1.1 (unavailable)" : "FSR 4.1.1 Native AA";
             updating = true;
             try
             {
@@ -122,7 +122,7 @@ internal static class NativeVideoMenu
                 {
                     SetChoices(Binding._listStepper, labels.Append(label)); fsrLabel = label;
                 }
-                Binding._listStepper.SetValueWithoutNotify(Fsr31MenuModel.DisplayIndex(owner.Current.Enabled,
+                Binding._listStepper.SetValueWithoutNotify(Fsr4MenuModel.DisplayIndex(owner.Current.Enabled,
                     Binding._setting?.value ?? NativeValues[0], NativeValues));
             }
             finally { updating = false; }
@@ -132,7 +132,7 @@ internal static class NativeVideoMenu
         {
             if (!Binding) return;
             SetChoices(Binding._listStepper, labels);
-            Binding._listStepper.SetValueWithoutNotify(Fsr31MenuModel.DisplayIndex(false, Binding._setting?.value ?? NativeValues[0], NativeValues));
+            Binding._listStepper.SetValueWithoutNotify(Fsr4MenuModel.DisplayIndex(false, Binding._setting?.value ?? NativeValues[0], NativeValues));
             if (localizer) localizer!.enabled = localizationEnabled;
             var caption = Binding._listStepper.dropdown.captionText;
             caption.enableAutoSizing = autoSize; caption.fontSizeMin = minSize; caption.fontSizeMax = maxSize;
@@ -143,7 +143,7 @@ internal static class NativeVideoMenu
     {
         internal readonly VideoSettingsView View;
         private readonly List<GameObject> rows = new();
-        private readonly UIListStepper sharpness, reactive;
+        private readonly UIListStepper sharpness;
 
         internal Menu(VideoSettingsView view, UIDropdownEnumSettingBinding source)
         {
@@ -156,13 +156,10 @@ internal static class NativeVideoMenu
             staging.SetActive(false); staging.transform.SetParent(parent, false);
             try
             {
-                sharpness = CreateRow(template.gameObject, staging.transform, "FSR 3.1 sharpening",
+                sharpness = CreateRow(template.gameObject, staging.transform, "FSR 4.1.1 sharpening",
                     Enumerable.Range(0, 11).Select(i => i == 0 ? "Off" : i * 10 + "%"),
-                    index => { if (index is >= 0 and <= 10 && Fsr31Controller.Instance is { } owner) owner.Apply(owner.Current with { Sharpness = index / 10f }); },
-                    () => { if (Fsr31Controller.Instance is { } owner) owner.Apply(owner.Current with { Sharpness = .2f }); });
-                reactive = CreateRow(template.gameObject, staging.transform, "FSR 3.1 anti-ghosting", new[] { "Off", "On" },
-                    index => { if (index is 0 or 1 && Fsr31Controller.Instance is { } owner) owner.Apply(owner.Current with { ReactiveMask = index == 1 }); },
-                    () => { if (Fsr31Controller.Instance is { } owner) owner.Apply(owner.Current with { ReactiveMask = true }); });
+                    index => { if (index is >= 0 and <= 10 && Fsr4Controller.Instance is { } owner) owner.Apply(owner.Current with { Sharpness = index / 10f }); },
+                    () => { if (Fsr4Controller.Instance is { } owner) owner.Apply(owner.Current with { Sharpness = .2f }); });
                 var positions = new List<float>();
                 for (var i = 0; i < parent.childCount; i++)
                 {
@@ -182,7 +179,7 @@ internal static class NativeVideoMenu
                 var group = View.navigationGroup;
                 if (group)
                 {
-                    group.selectables = (group.selectables ?? Array.Empty<UISelectable>()).Where(s => s).Concat(new UISelectable[] { sharpness, reactive }).ToArray();
+                    group.selectables = (group.selectables ?? Array.Empty<UISelectable>()).Where(s => s).Concat(new UISelectable[] { sharpness }).ToArray();
                     group.UpdateNavigation();
                 }
                 Refresh();
@@ -195,7 +192,7 @@ internal static class NativeVideoMenu
         {
             var row = Object.Instantiate(template, parent, false); rows.Add(row); row.name = label;
             var binding = row.GetComponentInChildren<UIDropdownEnumSettingBinding>(true);
-            binding.enabled = false; binding.settingPath = "fsr31/" + label;
+            binding.enabled = false; binding.settingPath = "fsr4/" + label;
             foreach (var localizer in row.GetComponentsInChildren<UnityEngine.Localization.Components.LocalizeStringEvent>(true)) localizer.enabled = false;
             foreach (var localizer in row.GetComponentsInChildren<LocalizeDropdown>(true)) localizer.enabled = false;
             binding.nameLabel.text = label;
@@ -213,12 +210,11 @@ internal static class NativeVideoMenu
 
         internal void Refresh()
         {
-            if (!View || Fsr31Controller.Instance is not { } owner) return;
+            if (!View || Fsr4Controller.Instance is not { } owner) return;
             updating = true;
             try
             {
-                sharpness.SetValueWithoutNotify(Fsr31MenuModel.SharpnessIndex(owner.Current.Sharpness));
-                reactive.SetValueWithoutNotify(owner.Current.ReactiveMask ? 1 : 0);
+                sharpness.SetValueWithoutNotify(Fsr4MenuModel.SharpnessIndex(owner.Current.Sharpness));
             }
             finally { updating = false; }
         }
@@ -228,7 +224,7 @@ internal static class NativeVideoMenu
             if (View && View.navigationGroup)
             {
                 var group = View.navigationGroup;
-                group.selectables = group.selectables.Where(s => s && s != sharpness && s != reactive).ToArray(); group.UpdateNavigation();
+                group.selectables = group.selectables.Where(s => s && s != sharpness).ToArray(); group.UpdateNavigation();
             }
             foreach (var row in rows) if (row) Object.Destroy(row);
         }
@@ -275,7 +271,7 @@ internal static class VideoMenuReset
 {
     private static void Postfix()
     {
-        Fsr31Controller.Instance?.Apply(new Fsr31Options()); NativeVideoMenu.Tick();
+        Fsr4Controller.Instance?.Apply(new Fsr4Options()); NativeVideoMenu.Tick();
     }
 }
 
@@ -286,7 +282,7 @@ internal static class NativeAaReset
     private static void Postfix(UISettingResetter __instance)
     {
         var binding = __instance.GetComponentInChildren<UIDropdownEnumSettingBinding>(true);
-        if (!binding || !NativeVideoMenu.IsAa(binding!) || Fsr31Controller.Instance is not { } owner) return;
+        if (!binding || !NativeVideoMenu.IsAa(binding!) || Fsr4Controller.Instance is not { } owner) return;
         owner.Apply(owner.Current with { Enabled = false }); NativeVideoMenu.RefreshAa(binding!);
     }
 }
