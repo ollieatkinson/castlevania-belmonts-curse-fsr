@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>BelmontsCurseGraphics</AssemblyName>
+    <Version>0.3.0</Version>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+    <Compile Include="vendor/fsr3/Runtime/*.cs" />
+    <EmbeddedResource Include="assets/belmont_fsr31_nativeaa" LogicalName="BelmontsCurseGraphics.Fsr31Shaders" />
+    <EmbeddedResource Include="assets/belmont_fsr31_reactivity" LogicalName="BelmontsCurseGraphics.Fsr31Reactivity" />
+    <Reference Include="$(GamePath)/BepInEx/core/BepInEx.Core.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/core/BepInEx.Unity.IL2CPP.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/core/0Harmony.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/core/MonoMod.RuntimeDetour.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/core/Il2CppInterop.Common.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/core/Il2CppInterop.Runtime.dll" Private="false" />
+    <Reference Include="$(GamePath)/BepInEx/interop/*.dll" Private="false" />
+  </ItemGroup>
+  <Target Name="GeneratePluginVersion" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <PluginVersionFile>$(IntermediateOutputPath)PluginVersion.g.cs</PluginVersionFile>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(PluginVersionFile)"
+                      Lines="namespace BelmontsCurseGraphics { internal static class BuildInfo { internal const string Version = &quot;$(Version)&quot;%3B } }"
+                      Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(PluginVersionFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="CheckGamePath" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(GamePath)/BepInEx/interop/Assembly-CSharp.dll')"
+           Text="Set GamePath to the game directory after running BepInEx once." />
+  </Target>
+  <Import Project="packaging/Standalone.targets" />
+</Project>

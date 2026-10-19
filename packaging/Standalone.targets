@@ -1,0 +1,47 @@
+<Project>
+  <PropertyGroup>
+    <PluginArchive Condition="'$(PluginArchive)' == ''">dist/$(AssemblyName)-v$(Version).zip</PluginArchive>
+    <StandaloneRoot>$(BaseIntermediateOutputPath)standalone/</StandaloneRoot>
+    <StandaloneCache>.build/bepinex/distribution/</StandaloneCache>
+  </PropertyGroup>
+  <ItemGroup>
+    <StandaloneDependency Include="https://builds.bepinex.dev/projects/bepinex_be/788/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788%252B5b766a3.zip">
+      <ArchiveName>BepInEx-788.zip</ArchiveName>
+      <Hash>F4CC496BD098A0DF4164B81E3737297707F13A47C2478DBA2F60EEFAB784817A</Hash>
+    </StandaloneDependency>
+    <StandaloneDependency Include="https://codeload.github.com/BepInEx/BepInEx/tar.gz/5b766a3b7f6c164d4798924a93f3acf4db769d06">
+      <ArchiveName>BepInEx-source.tar.gz</ArchiveName>
+      <Hash>2E4196F0620062A4CC38D154999AACEB35E63B4486F2246EAF2862792F91E045</Hash>
+    </StandaloneDependency>
+    <StandaloneDependency Include="https://codeload.github.com/BepInEx/Il2CppInterop/tar.gz/dbda1cb353b0f4253345dc45136d170b9e50a5a0">
+      <ArchiveName>Il2CppInterop-source.tar.gz</ArchiveName>
+      <Hash>477C1BE02F0F13E5A3F424EE33293D50E95E1B770A6DFE1B45E5135EB172029E</Hash>
+    </StandaloneDependency>
+    <StandaloneDependency Include="https://codeload.github.com/NeighTools/UnityDoorstop/tar.gz/v4.5.0">
+      <ArchiveName>UnityDoorstop-source.tar.gz</ArchiveName>
+      <Hash>A45F7735F129BFB45FAD55935260242C809B7E1370D8F271AC22F2E8311E1A39</Hash>
+    </StandaloneDependency>
+  </ItemGroup>
+  <Target Name="PackageStandalone">
+    <Error Condition="!Exists('$(PluginArchive)')" Text="Run scripts/package.sh first, or set PluginArchive to an existing release ZIP." />
+    <MakeDir Directories="$(StandaloneCache)" />
+    <DownloadFile SourceUrl="%(StandaloneDependency.Identity)" DestinationFolder="$(StandaloneCache)"
+                  DestinationFileName="%(StandaloneDependency.ArchiveName)"
+                  Condition="!Exists('$(StandaloneCache)%(StandaloneDependency.ArchiveName)')" />
+    <VerifyFileHash File="$(StandaloneCache)%(StandaloneDependency.ArchiveName)" Hash="%(StandaloneDependency.Hash)" Algorithm="SHA256" />
+    <RemoveDir Directories="$(StandaloneRoot)" />
+    <Unzip SourceFiles="$(StandaloneCache)BepInEx-788.zip;$(PluginArchive)" DestinationFolder="$(StandaloneRoot)" />
+    <ItemGroup>
+      <StandaloneSource Include="$(StandaloneCache)BepInEx-source.tar.gz;$(StandaloneCache)Il2CppInterop-source.tar.gz;$(StandaloneCache)UnityDoorstop-source.tar.gz" />
+    </ItemGroup>
+    <Copy SourceFiles="@(StandaloneSource);packaging/THIRD_PARTY_NOTICES.txt" DestinationFolder="$(StandaloneRoot)BelmontsCurseGraphics/licenses" />
+    <Copy SourceFiles="packaging/Install.cmd;packaging/Install.ps1" DestinationFolder="$(StandaloneRoot)" />
+    <ZipDirectory SourceDirectory="$(StandaloneRoot)" DestinationFile="dist/$(AssemblyName)-v$(Version).standalone.zip" Overwrite="true" />
+    <GetFileHash Files="dist/$(AssemblyName)-v$(Version).standalone.zip" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="StandaloneArchiveHash" />
+    </GetFileHash>
+    <WriteLinesToFile File="dist/$(AssemblyName)-v$(Version).standalone.zip.sha256"
+                      Lines="%(StandaloneArchiveHash.FileHash)  $(AssemblyName)-v$(Version).standalone.zip"
+                      Overwrite="true" />
+  </Target>
+</Project>

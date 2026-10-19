@@ -1,0 +1,21 @@
+FSR 3.1 Native AA
+
+Close the game. Extract the whole ZIP into the game folder, beside
+Castlevania Belmont's Curse.exe.
+
+The plugin ZIP requires BepInEx 6.0.788 (Windows x64 / Unity IL2CPP).
+The standalone ZIP includes it. On Windows, you can also extract the
+standalone ZIP anywhere and run Install.cmd to select the game folder.
+Allow a few minutes for setup on the first BepInEx launch.
+
+Open Settings > Video > Anti-aliasing and select FSR 3.1 Native AA.
+Adjust FSR sharpening and anti-ghosting below it. Changes save automatically.
+Select an original AA option to turn FSR off. Requires DX11.
+
+Linux/Proton Steam launch option:
+  WINEDLLOVERRIDES="winhttp=n,b" %command%
+
+To uninstall, close the game and delete:
+  BepInEx/plugins/BelmontsCurseGraphics.dll
+
+For troubleshooting, check BepInEx/LogOutput.log.
