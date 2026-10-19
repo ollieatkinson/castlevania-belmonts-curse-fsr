@@ -55,7 +55,7 @@ public sealed class Fsr31Controller : MonoBehaviour
             var failure = Requirements(camera, data!, pipeline!).Failure;
             if (failure != null)
             {
-                UnavailableReason = Fsr31Prototype.Available ? failure : Fsr31Prototype.UnavailableReason;
+                UnavailableReason = Fsr31Backend.Available ? failure : Fsr31Backend.UnavailableReason;
                 Deactivate("FSR unavailable; using game AA. " + UnavailableReason);
                 return;
             }
@@ -65,10 +65,10 @@ public sealed class Fsr31Controller : MonoBehaviour
                 snapshot = new Snapshot(camera, data!, pipeline!);
             }
             UnavailableReason = null;
-            Fsr31Prototype.Tick(true);
+            Fsr31Backend.Tick(true);
             snapshot.Apply();
             Fsr31Active = true;
-            Report(Fsr31Prototype.Dispatching ? $"FSR 3.1 Native AA dispatching at {camera.pixelWidth}x{camera.pixelHeight}, 100%"
+            Report(Fsr31Backend.Dispatching ? $"FSR 3.1 Native AA dispatching at {camera.pixelWidth}x{camera.pixelHeight}, 100%"
                 : "FSR 3.1 Native AA selected; awaiting first frame");
         }
         catch (Exception e)
@@ -87,7 +87,7 @@ public sealed class Fsr31Controller : MonoBehaviour
         var rendererData = index >= 0 && index < renderers.Length ? renderers[index]?.TryCast<UniversalRendererData>() : null;
         var shader = rendererData?.postProcessData?.shaders?.temporalAntialiasingPS;
         var renderer = data.scriptableRenderer?.TryCast<UniversalRenderer>();
-        return new(Fsr31Prototype.Available, data.renderPostProcessing, shader && shader!.isSupported,
+        return new(Fsr31Backend.Available, data.renderPostProcessing, shader && shader!.isSupported,
             renderer != null && renderer.m_MotionVectorPass != null,
             data.renderType != CameraRenderType.Base || (data.cameraStack?.Count ?? 0) > 0,
             camera.allowDynamicResolution, camera.allowHDR && pipeline.supportsHDR);
@@ -100,7 +100,7 @@ public sealed class Fsr31Controller : MonoBehaviour
         Plugin.Settings.Save(options);
         if (options != Current)
             Plugin.Logger.LogInfo($"FSR settings: enabled={options.Enabled}, sharpening={options.Sharpness:F2}, anti-ghosting={options.ReactiveMask}");
-        if (options.Enabled && !Current.Enabled) Fsr31Prototype.Retry();
+        if (options.Enabled && !Current.Enabled) Fsr31Backend.Retry();
         if (options.ReactiveMask != Current.ReactiveMask && snapshot?.Data is { } data && data) data.resetHistory = true;
         Current = options; failed = false; UnavailableReason = null;
         if (!options.Enabled) Deactivate("Game AA");
@@ -118,7 +118,7 @@ public sealed class Fsr31Controller : MonoBehaviour
     {
         Fsr31Active = false;
         Restore();
-        Fsr31Prototype.Tick(false);
+        Fsr31Backend.Tick(false);
         Report(status);
     }
 
@@ -141,7 +141,7 @@ public sealed class Fsr31Controller : MonoBehaviour
     {
         Fsr31Active = false;
         try { Restore(); }
-        finally { NativeVideoMenu.Shutdown(); Fsr31Prototype.Shutdown(); }
+        finally { NativeVideoMenu.Shutdown(); Fsr31Backend.Shutdown(); }
     }
 
     public void OnDestroy() { Shutdown(); if (Instance == this) Instance = null; }

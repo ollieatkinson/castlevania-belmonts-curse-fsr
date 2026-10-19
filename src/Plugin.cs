@@ -23,7 +23,7 @@ public sealed class Plugin : BasePlugin
         Compatibility.Field(typeof(UniversalRenderer), "m_DepthTexture", typeof(UnityEngine.Rendering.RTHandle));
         AddComponent<Fsr31Controller>();
         harmony = new Harmony(Id); harmony.PatchAll(typeof(Plugin).Assembly);
-        Fsr31Prototype.Load();
+        Fsr31Backend.Load();
         Log.LogInfo($"FSR 3.1 Native AA {BuildInfo.Version} loaded. Select Settings > Video > Anti-aliasing > FSR 3.1 Native AA.");
         Log.LogInfo($"Graphics device: {UnityEngine.SystemInfo.graphicsDeviceName}; API={UnityEngine.SystemInfo.graphicsDeviceType}");
     }

@@ -27,5 +27,5 @@ internal sealed record Fsr31Requirements(bool Backend, bool PostProcessing, bool
         : !MotionVectors ? "The renderer cannot produce motion vectors."
         : Stacked ? "Camera stacking is unsupported."
         : DynamicResolution ? "Dynamic resolution is unsupported."
-        : Hdr ? "This prototype supports LDR rendering only." : null;
+        : Hdr ? "FSR 3.1 supports LDR rendering only." : null;
 }

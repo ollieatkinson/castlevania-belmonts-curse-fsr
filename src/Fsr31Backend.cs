@@ -16,7 +16,7 @@ namespace BelmontsCurseGraphics;
 // Replace URP's temporal resolve at its existing injection point. URP continues
 // to produce depth, motion vectors and jittered geometry, then performs its normal
 // post-processing and HUD composition after the FSR resolve.
-internal static class Fsr31Prototype
+internal static class Fsr31Backend
 {
     private static AssetBundle? bundle;
     private static readonly List<ComputeShader> ownedShaders = new();
@@ -51,7 +51,7 @@ internal static class Fsr31Prototype
         try
         {
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Direct3D11 || !SystemInfo.supportsComputeShaders || !SystemInfo.usesReversedZBuffer)
-                throw new NotSupportedException("This prototype requires DX11 compute shaders and reversed depth.");
+                throw new NotSupportedException("FSR 3.1 requires DX11 compute shaders and reversed depth.");
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BelmontsCurseGraphics.Fsr31Shaders")
                 ?? throw new FileNotFoundException("FSR 3.1 shader resource is missing.");
             using var memory = new MemoryStream(); stream.CopyTo(memory);
@@ -85,7 +85,7 @@ internal static class Fsr31Prototype
                 typeof(CommandBuffer), typeof(Material), typeof(CameraData).MakeByRefType(), typeof(RTHandle), typeof(RTHandle), typeof(RenderTexture));
             InstallResolve(info);
             UnavailableReason = "";
-            Plugin.Logger.LogInfo("FSR 3.1 Native AA prototype: all 11 FSR compute shaders and the custom reactivity shader cloned, persistent and supported; source bundles unloaded.");
+            Plugin.Logger.LogInfo("FSR 3.1 Native AA: all 11 FSR compute shaders and the custom reactivity shader cloned, persistent and supported; source bundles unloaded.");
         }
         catch (Exception e)
         {
@@ -94,7 +94,7 @@ internal static class Fsr31Prototype
             if (bundle) bundle!.Unload(true);
             bundle = null;
             UnavailableReason = e.Message;
-            Plugin.Logger.LogWarning($"FSR 3.1 prototype unavailable; existing AA modes remain available: {e.Message}");
+            Plugin.Logger.LogWarning($"FSR 3.1 unavailable; existing AA modes remain available: {e.Message}");
         }
     }
 
@@ -271,7 +271,7 @@ internal static class Fsr31Prototype
             var nativeTaa = data.taaSettings;
             nativeTaa.resetHistoryFrames = 1;
             data.taaSettings = nativeTaa;
-            Plugin.Logger.LogError($"FSR 3.1 prototype stopped; falling back to native TAA: {e}");
+            Plugin.Logger.LogError($"FSR 3.1 stopped; falling back to native TAA: {e}");
             return false;
         }
     }

@@ -114,7 +114,7 @@ internal static class NativeVideoMenu
         internal void Refresh()
         {
             if (!Binding || Fsr31Controller.Instance is not { } owner) return;
-            var label = owner.Current.Enabled && (!Fsr31Prototype.Available || owner.UnavailableReason != null) ? "FSR 3.1 (unavailable)" : "FSR 3.1 Native AA";
+            var label = owner.Current.Enabled && (!Fsr31Backend.Available || owner.UnavailableReason != null) ? "FSR 3.1 (unavailable)" : "FSR 3.1 Native AA";
             updating = true;
             try
             {
