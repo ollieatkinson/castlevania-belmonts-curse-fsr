@@ -75,8 +75,7 @@ internal static class Fsr4Backend
 
     internal static void Retry()
     {
-        if (NativeBridge.Failed) return;
-        ReleaseContext(); faulted = false; reason = "";
+        ReleaseContext(); NativeBridge.ReleaseContext(true); faulted = false; reason = "";
     }
 
     internal static void Tick(bool requested)
@@ -228,6 +227,7 @@ internal static class Fsr4Backend
 
     private static void ReleaseContext()
     {
+        if (output) NativeBridge.ReleaseContext();
         lastFrame = -1;
         outputHandle?.Release(); outputHandle = null;
         ReleaseTexture(ref output); ReleaseTexture(ref colorInput); ReleaseTexture(ref depthInput); ReleaseTexture(ref motionInput);

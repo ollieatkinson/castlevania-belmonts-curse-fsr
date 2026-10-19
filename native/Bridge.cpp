@@ -71,7 +71,7 @@ struct Bridge {
     Com<ID3D11Fence> fence11;
     SharedTexture color,depth,motion,output;
     HANDLE event=nullptr;
-    uint64_t value=0;
+    uint64_t value=0, submitted=0;
     ffxContext context=nullptr;
     // SDK requires context descriptions to stay alive until destruction.
     ffxOverrideVersion version{};
@@ -135,7 +135,7 @@ struct Bridge {
         desc.cameraNear=frame.nearPlane;desc.cameraFar=frame.farPlane;desc.cameraFovAngleVertical=frame.fov;desc.viewSpaceToMetersFactor=1;
         api(dispatch(&context,&desc.header),"Dispatch FSR 4.1.1");
         // FFX restores imported resources to their supplied COMMON states.
-        HR(list->Close());ID3D12CommandList* lists[]={list};queue->ExecuteCommandLists(1,lists);HR(queue->Signal(fence12,outputReady));
+        HR(list->Close());ID3D12CommandList* lists[]={list};submitted=outputReady;queue->ExecuteCommandLists(1,lists);HR(queue->Signal(fence12,outputReady));
         // Wait before reusing the allocator and copying the result into Unity.
         // A bounded CPU wait keeps this first implementation simple and deterministic.
         HR(fence12->SetEventOnCompletion(outputReady,event));
@@ -144,15 +144,32 @@ struct Bridge {
     }
 };
 static Bridge* bridge=nullptr;
+static bool releaseBridge(){
+    if(bridge && bridge->fence12 && bridge->fence12->GetCompletedValue()<bridge->submitted){
+        report("FSR GPU work is still pending; restart the game before retrying",true);
+        return false;
+    }
+    delete bridge;bridge=nullptr;return true;
+}
 static void retain(const Frame& f){for(void* p:{f.color,f.depth,f.motion,f.output})((IUnknown*)p)->AddRef();}
 static void release(const Frame& f){for(void* p:{f.color,f.depth,f.motion,f.output})((IUnknown*)p)->Release();}
 static void __stdcall renderEvent(int eventId,void* data){
+    if(eventId==2||eventId==3){
+        if(releaseBridge()){
+            AcquireSRWLockExclusive(&statusLock);
+            status.width=status.height=0;
+            if(eventId==3)status.failed=0;
+            ReleaseSRWLockExclusive(&statusLock);
+            report(eventId==3 ? "FSR 4.1.1 bridge ready for retry" : "FSR 4.1.1 GPU context released");
+        }
+        return;
+    }
     if(eventId!=1||!data)return;
     Frame* frame=(Frame*)data;
     try {
         Status current{};Fsr4_GetStatus(&current,nullptr,0);
         if(current.failed)throw Failure{"FSR bridge is stopped"};
-        if(bridge&&(bridge->width!=frame->width||bridge->height!=frame->height)){delete bridge;bridge=nullptr;}
+        if(bridge&&(bridge->width!=frame->width||bridge->height!=frame->height)&&!releaseBridge())throw Failure{"Cannot resize while FSR GPU work is pending"};
         if(!bridge){bridge=new Bridge();bridge->init((ID3D11Texture2D*)frame->color,frame->width,frame->height);}
         LARGE_INTEGER start,end,freq;QueryPerformanceFrequency(&freq);QueryPerformanceCounter(&start);
         bridge->run(*frame);QueryPerformanceCounter(&end);
@@ -189,6 +206,6 @@ EXPORT void Fsr4_GetStatus(Status* target,char* text,uint32_t capacity){
 }
 EXPORT void Fsr4_Shutdown(){
     // Must be called only after Unity's queued plugin events have completed.
-    delete bridge;bridge=nullptr;
+    if(!releaseBridge())return;
     if(sdk){FreeLibrary(sdk);sdk=nullptr;}
 }

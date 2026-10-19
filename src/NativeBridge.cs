@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using BepInEx;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace BelmontsCurseGraphics;
 
@@ -47,6 +49,19 @@ internal static class NativeBridge
     }
 
     internal static bool Failed => initialized && ReadStatus().State.Failed != 0;
+
+    internal static void ReleaseContext(bool retry = false)
+    {
+        if (!initialized) return;
+        var command = new CommandBuffer { name = "FSR4 context cleanup" };
+        try
+        {
+            command.IssuePluginEventAndData(RenderEvent, retry ? 3 : 2, IntPtr.Zero);
+            Graphics.ExecuteCommandBuffer(command);
+        }
+        finally { command.Release(); }
+    }
+
 
     [DllImport(Library, EntryPoint = "Fsr4_Load", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
     private static extern int LoadNative(string directory);

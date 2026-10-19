@@ -23,6 +23,7 @@ int main(int argc,char**){
  auto callback=(void(__stdcall*)(int,void*))Fsr4_GetRenderEvent();
  unsigned short previous[4]{};
  for(uint32_t i=0;i<6;i++){
+  if(i==3){callback(2,nullptr);callback(3,nullptr);printf("Released context and requested retry\n");}
   f.frame=i;f.reset=(i==0||i==3);clear(device,context,(ID3D11Texture2D*)f.color,{i<3?.25f:.75f,.5f,.25f,1});
   callback(1,Fsr4_Queue(&f));Status s{};char text[512];Fsr4_GetStatus(&s,text,sizeof(text));
   printf("Frame %u: %ux%u count=%u time=%.2fms, %s\n",i,s.width,s.height,s.frames,s.gpuMilliseconds,text);if(s.failed||s.frames!=i+1)return 2;

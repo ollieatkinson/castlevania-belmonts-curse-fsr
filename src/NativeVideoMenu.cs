@@ -34,7 +34,7 @@ internal static class NativeVideoMenu
 
     internal static void RefreshAa(UIDropdownEnumSettingBinding binding)
     {
-        if (!updating && IsAa(binding) && selectors.TryGetValue(binding.GetInstanceID(), out var selector)) selector.Refresh();
+        if (!updating && IsAa(binding)) PrepareAa(binding);
     }
 
     internal static bool ChangeAa(UIDropdownEnumSettingBinding binding, int index)
@@ -68,7 +68,7 @@ internal static class NativeVideoMenu
         foreach (var id in selectors.Where(x => !x.Value.Binding).Select(x => x.Key).ToArray()) selectors.Remove(id);
         foreach (var id in menus.Where(x => !x.Value.View).Select(x => x.Key).ToArray()) menus.Remove(id);
         foreach (var selector in selectors.Values) selector.Refresh();
-        foreach (var menu in menus.Values) menu.Refresh();
+        foreach (var menu in menus.Values) { PrepareAa(menu.Source); menu.Refresh(); }
     }
 
     internal static void Shutdown()
@@ -142,12 +142,13 @@ internal static class NativeVideoMenu
     private sealed class Menu
     {
         internal readonly VideoSettingsView View;
+        internal readonly UIDropdownEnumSettingBinding Source;
         private readonly List<GameObject> rows = new();
         private readonly UIListStepper sharpness;
 
         internal Menu(VideoSettingsView view, UIDropdownEnumSettingBinding source)
         {
-            View = view;
+            View = view; Source = source;
             var template = source.transform;
             while (!source._listStepper.transform.IsChildOf(template) || !source.nameLabel.transform.IsChildOf(template))
                 template = template.parent ? template.parent : throw new InvalidOperationException("Could not locate the native AA row.");
