@@ -1,10 +1,10 @@
 # Testing
 
-Branch: fsr4-dx12-bridge. Version: 0.4.0-preview.2.
+Version: 0.4.0-preview.2.
 
 Test machine: RX 7900 XTX, Proton Experimental, DXVK and vkd3d-proton 3.1.0. Game: Steam build 25975867 / 1.1.3 / Unity 2022.3.62f2.
 
-- Managed Release build: no warnings or errors. All 28 regression checks pass.
+- Managed Release build: no warnings or errors.
 - Native tests select and query the FSR 4.1.1 provider, dispatch six frames at 1280×720 and 5120×2160, release/recreate the GPU context, reset history and read changed output back through DX11.
 - The actual game loads an existing save in Notre Dame and dispatches FSR 4.1.1 at 5120×2160 with full-resolution depth. Captured gameplay frames render the scene, character and HUD correctly. Sustained dispatch has no reported FSR failure.
 - A temporary gamepad test moves Rose from x=419.87 to x=420.73. Rendering and FSR dispatch continue after movement.

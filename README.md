@@ -19,7 +19,6 @@ The managed plugin stays at `BepInEx/plugins/BelmontsCurseGraphics.dll`. Native 
 ```sh
 bash scripts/build-native.sh
 dotnet build -c Release -p:GamePath="/path/to/game"
-dotnet run --project tests/Fsr4.Tests.csproj -c Release
 GamePath="/path/to/game" bash scripts/package.sh
 ```
 
