@@ -6,12 +6,20 @@
 #define EXPORT extern "C"
 #endif
 // Blittable ABI shared with NativeBridge.cs. Pointers are ID3D11Texture2D*.
-struct Frame {
+struct Frame
+{
     void *color, *depth, *motion, *output;
     uint32_t width, height, reset, frame;
     float jitterX, jitterY, deltaMs, nearPlane, farPlane, fov, sharpness;
 };
-struct Status { int32_t failed; uint32_t frames, width, height; double gpuMilliseconds; };
+
+struct Status
+{
+    int32_t failed;
+    uint32_t frames, width, height;
+    double gpuMilliseconds;
+};
+
 static_assert(sizeof(Frame) == 80, "Frame ABI size");
 static_assert(sizeof(Status) == 24, "Status ABI size");
 EXPORT int Fsr4_Load(const wchar_t* directory);
