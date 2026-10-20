@@ -1,6 +1,6 @@
 # FSR 4.1.1 Native AA
 
-Experimental FSR 4.1.1 Native AA for Castlevania: Belmont’s Curse, using a DX11–DX12 bridge.
+FSR 4.1.1 Native AA for Castlevania: Belmont’s Curse, using a DX11–DX12 bridge.
 
 Requires a Radeon RX 7000 or RX 9000 desktop GPU and a working DX12 runtime. The game stays on DX11. Linux requires current Proton and Mesa with FSR 4 support.
 

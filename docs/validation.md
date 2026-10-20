@@ -1,6 +1,6 @@
 # Testing
 
-Version: 0.4.0-preview.2.
+Version: 1.0.0.
 
 Test machine: RX 7900 XTX, Proton Experimental, DXVK and vkd3d-proton 3.1.0. Game: Steam build 25975867 / 1.1.3 / Unity 2022.3.62f2.
 

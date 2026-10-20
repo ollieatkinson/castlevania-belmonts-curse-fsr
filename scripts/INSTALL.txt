@@ -1,4 +1,4 @@
-FSR 4.1.1 Native AA (experimental)
+FSR 4.1.1 Native AA
 
 Close the game. Extract the whole ZIP into the game folder, beside
 Castlevania Belmont's Curse.exe.
