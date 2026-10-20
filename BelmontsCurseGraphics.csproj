@@ -34,5 +34,5 @@
     <Error Condition="!Exists('$(GamePath)/BepInEx/interop/Assembly-CSharp.dll')"
            Text="Set GamePath to the game directory after running BepInEx once." />
   </Target>
-  <Import Project="packaging/Standalone.targets" />
+  <Import Project="scripts/Standalone.targets" />
 </Project>

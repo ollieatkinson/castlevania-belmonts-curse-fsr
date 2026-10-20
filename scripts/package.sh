@@ -33,14 +33,14 @@ dist.mkdir(exist_ok=True)
 archive = dist / f"BelmontsCurseGraphics-v{version}.zip"
 with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as package:
     package.write("bin/Release/net6.0/BelmontsCurseGraphics.dll", "BepInEx/plugins/BelmontsCurseGraphics.dll")
-    package.write("packaging/INSTALL.txt", "INSTALL.txt")
+    package.write("scripts/INSTALL.txt", "INSTALL.txt")
     package.write("docs/validation.md", "docs/validation.md")
     for document in ("README.md", "LICENSE"):
         package.write(document, document)
     for binary in ("BelmontFsr4Bridge.dll", "amd_fidelityfx_upscaler_dx12.dll"):
         package.write(".build/fsr4/" + binary, "BepInEx/FSR4/" + binary)
     for document in ("LICENSE.md", "PROVENANCE.md"):
-        package.write("vendor/fsr4/" + document, "BelmontsCurseGraphics/licenses/FSR4/" + document)
+        package.write("native/fsr4/" + document, "BelmontsCurseGraphics/licenses/FSR4/" + document)
     package.write("docs/development.md", "docs/development.md")
 checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
 archive.with_suffix(".zip.sha256").write_text(f"{checksum}  {archive.name}\n")
@@ -49,5 +49,5 @@ PY
 
 "$dotnet_command" msbuild BelmontsCurseGraphics.csproj -t:PackageStandalone -p:Version="$version" -nologo
 
-python3 packaging/validate_package.py "dist/BelmontsCurseGraphics-v$version.zip" BelmontsCurseGraphics.dll
-python3 packaging/validate_package.py "dist/BelmontsCurseGraphics-v$version.standalone.zip" BelmontsCurseGraphics.dll --standalone
+python3 scripts/validate_package.py "dist/BelmontsCurseGraphics-v$version.zip" BelmontsCurseGraphics.dll
+python3 scripts/validate_package.py "dist/BelmontsCurseGraphics-v$version.standalone.zip" BelmontsCurseGraphics.dll --standalone

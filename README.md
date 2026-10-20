@@ -33,6 +33,6 @@ cmake --build .build/native --config Release
 cmake --install .build/native --config Release --prefix .build/fsr4
 ```
 
-See [development](docs/development.md), [testing](docs/validation.md) and [AMD SDK provenance](vendor/fsr4/PROVENANCE.md).
+See [development](docs/development.md), [testing](docs/validation.md) and [AMD SDK provenance](native/fsr4/PROVENANCE.md).
 
 Project code is MIT. AMD’s runtime and other bundled dependencies retain their own licences. Unofficial community mod.

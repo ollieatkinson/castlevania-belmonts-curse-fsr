@@ -34,8 +34,8 @@
     <ItemGroup>
       <StandaloneSource Include="$(StandaloneCache)BepInEx-source.tar.gz;$(StandaloneCache)Il2CppInterop-source.tar.gz;$(StandaloneCache)UnityDoorstop-source.tar.gz" />
     </ItemGroup>
-    <Copy SourceFiles="@(StandaloneSource);packaging/THIRD_PARTY_NOTICES.txt" DestinationFolder="$(StandaloneRoot)BelmontsCurseGraphics/licenses" />
-    <Copy SourceFiles="packaging/Install.cmd;packaging/Install.ps1" DestinationFolder="$(StandaloneRoot)" />
+    <Copy SourceFiles="@(StandaloneSource);scripts/THIRD_PARTY_NOTICES.txt" DestinationFolder="$(StandaloneRoot)BelmontsCurseGraphics/licenses" />
+    <Copy SourceFiles="scripts/Install.cmd;scripts/Install.ps1" DestinationFolder="$(StandaloneRoot)" />
     <ZipDirectory SourceDirectory="$(StandaloneRoot)" DestinationFile="dist/$(AssemblyName)-v$(Version).standalone.zip" Overwrite="true" />
     <GetFileHash Files="dist/$(AssemblyName)-v$(Version).standalone.zip" Algorithm="SHA256">
       <Output TaskParameter="Items" ItemName="StandaloneArchiveHash" />

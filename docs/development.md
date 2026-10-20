@@ -20,7 +20,7 @@ Jitter comes from the actual URP projection matrix, with DX11 Y inversion. Motio
 bash scripts/build-native.sh
 zig c++ -target x86_64-windows-gnu -O2 -Wno-nullability-completeness \
   native/Bridge.cpp native/TestBridge.cpp \
-  -Ivendor/fsr4/api/include -Ivendor/fsr4/upscalers/include \
+  -Inative/fsr4/api/include -Inative/fsr4/upscalers/include \
   -ld3d11 -ld3d12 -ldxgi -ldxguid -o .build/fsr4/bridge_test.exe
 cd .build/fsr4
 wine bridge_test.exe

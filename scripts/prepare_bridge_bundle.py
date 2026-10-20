@@ -1,6 +1,6 @@
 """Wrap our compiled HLSL in the already validated Unity 2022.3 compute schema.
 
-Usage: prepare_bridge_pack_bundle.py template_bundle shader.dxbc output_bundle
+Usage: prepare_bridge_bundle.py template_bundle shader.dxbc output_bundle
 The resulting bundle contains only our compute program and the Unity manifest.
 """
 from pathlib import Path
