@@ -1,6 +1,6 @@
 # FSR 4.1.1 Native AA
 
-Experimental FSR 4.1.1 Native AA for Castlevania: Belmont’s Curse, using a DX11–DX12 bridge. Replaces this mod’s FSR 3.1 backend.
+Experimental FSR 4.1.1 Native AA for Castlevania: Belmont’s Curse, using a DX11–DX12 bridge.
 
 Requires a Radeon RX 7000 or RX 9000 desktop GPU and a working DX12 runtime. The game stays on DX11. Linux requires current Proton and Mesa with FSR 4 support.
 
@@ -10,9 +10,9 @@ Close the game and extract the whole plugin ZIP into the game folder. BepInEx 6.
 
 Select **Settings → Video → Anti-aliasing → FSR 4.1.1 Native AA**. Adjust sharpening below it. Select an original AA option to turn FSR off. Changes save automatically.
 
-FSR renders at 100% resolution. This version has no frame generation or separate anti-ghosting mask. The SDK provides the temporal reconstruction.
+FSR renders at 100% resolution.
 
-The managed plugin stays at `BepInEx/plugins/BelmontsCurseGraphics.dll`. Native files live in `BepInEx/FSR4/`. To uninstall, remove the plugin and that native folder after closing the game.
+The plugin is installed at `BepInEx/plugins/BelmontsCurseGraphics.dll`, with native files in `BepInEx/FSR4/`. To uninstall, remove the plugin and that native folder after closing the game.
 
 ## Build
 
