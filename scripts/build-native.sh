@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-python3 scripts/prepare-fsr4.py
-mkdir -p .build/fsr4
-"${ZIG_COMMAND:-zig}" c++ -target x86_64-windows-gnu -O2 -Wno-nullability-completeness \
-  -shared native/Bridge.cpp -Ivendor/fsr4/api/include -Ivendor/fsr4/upscalers/include \
-  -ld3d11 -ld3d12 -ldxgi -ldxguid -o .build/fsr4/BelmontFsr4Bridge.dll
+cmake_command="${CMAKE_COMMAND:-cmake}"
+"$cmake_command" -S . -B .build/native \
+  -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/zig-windows.cmake" -DCMAKE_BUILD_TYPE=Release
+"$cmake_command" --build .build/native --config Release
+"$cmake_command" --install .build/native --config Release --prefix "$PWD/.build/fsr4"

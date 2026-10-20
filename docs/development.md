@@ -1,5 +1,7 @@
 # Development
 
+CMake builds the native bridge and installs it alongside the bundled, checksum-verified AMD runtime. The Linux build wrapper uses the Zig Windows toolchain; Windows builds can use Visual C++.
+
 The mod keeps the existing native Video menu integration and URP temporal resolve hook. URP generates geometry jitter, depth and motion vectors. FSR 4.1.1 replaces the resolve at 100% render scale with MSAA off.
 
 The input-packing compute shader copies colour, the renderer’s actual depth plane and motion vectors into explicit RGBA16F, R32F and RG16F textures. A CommandBuffer plugin event runs the bridge on Unity’s render thread after those copies and before the output blit.

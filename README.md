@@ -23,7 +23,15 @@ dotnet run --project tests/Fsr4.Tests.csproj -c Release
 GamePath="/path/to/game" bash scripts/package.sh
 ```
 
-The native build uses Zig. The script downloads and verifies AMD’s SDK runtime. Packages are written to `dist/`.
+The native build uses CMake and Zig on Linux. AMD’s runtime is bundled and checksum-verified; building the bridge needs no downloads. Packages are written to `dist/`.
+
+On Windows with the Visual C++ build tools:
+
+```sh
+cmake -S . -B .build/native -A x64
+cmake --build .build/native --config Release
+cmake --install .build/native --config Release --prefix .build/fsr4
+```
 
 See [development](docs/development.md), [testing](docs/validation.md) and [AMD SDK provenance](vendor/fsr4/PROVENANCE.md).
 
